@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Kullanıcılar
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(USER)
+  firstName     String?
+  lastName      String?
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  listings      Listing[] // İlanlar
+  teamMember    TeamMember? // Ekip üyesi
+}
+
+// İlanlar
+model Listing {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  price         Float?
+  propertyType  PropertyType
+  status        ListingStatus @default(ACTIVE)
+  location      Location? @relation(fields: [locationId], references: [id])
+  locationId    String?
+  agent         User      @relation(fields: [agentId], references: [id])
+  agentId       String
+  images        Image[]
+  features      Feature[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Lokasyonlar
+model Location {
+  id            String    @id @default(cuid())
+  city          String
+  district      String
+  neighborhood  String?
+  address       String?
+  latitude      Float?
+  longitude     Float?
+  listings      Listing[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// İlan Görselleri
+model Image {
+  id            String    @id @default(cuid())
+  url           String
+  listing       Listing   @relation(fields: [listingId], references: [id])
+  listingId     String
+  isMain        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+}
+
+// İlan Özellikleri
+model Feature {
+  id            String    @id @default(cuid())
+  name          String
+  value         String?
+  listing       Listing   @relation(fields: [listingId], references: [id])
+  listingId     String
+  createdAt     DateTime  @default(now())
+}
+
+// Referanslar
+model Reference {
+  id            String    @id @default(cuid())
+  companyName   String
+  description   String?
+  logoUrl       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Ekip Üyeleri
+model TeamMember {
+  id            String    @id @default(cuid())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String    @unique
+  position      String
+  bio           String?
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// İletişim Mesajları
+model ContactMessage {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  phone         String?
+  message       String
+  status        MessageStatus @default(NEW)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Career Applications
+model CareerApplication {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  address   String
+  gender    String
+  cvUrl     String?  // CV dosyasının URL'i
+  status    String   @default("Beklemede") // Beklemede, İncelendi, Reddedildi, Kabul Edildi
+  notes     String?  // Admin notları
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Enum'lar
+enum Role {
+  ADMIN
+  AGENT
+  USER
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  VILLA
+  LAND
+  COMMERCIAL
+  OTHER
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  RENTED
+  INACTIVE
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+}
