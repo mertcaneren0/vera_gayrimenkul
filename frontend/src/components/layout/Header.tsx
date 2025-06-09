@@ -40,18 +40,18 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white">
+    <header className="absolute top-0 left-0 right-0 z-50 bg-black/10 backdrop-blur-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Vera Gayrimenkul</span>
-            <img className="h-8 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
+            <img className="h-12 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
           </Link>
         </div>
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Ana menüyü aç</span>
@@ -62,7 +62,7 @@ export default function Header() {
           {navigation.map((item) => (
             item.dropdown ? (
               <Menu as="div" className="relative inline-block text-left" key={item.name}>
-                <Menu.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                <Menu.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-white hover:text-gray-200">
                   {item.name}
                   <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
                 </Menu.Button>
@@ -102,7 +102,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600"
+                className="text-sm font-semibold leading-6 text-white hover:text-gray-200"
               >
                 {item.name}
               </Link>
@@ -118,7 +118,7 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Vera Gayrimenkul</span>
-              <img className="h-8 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
+              <img className="h-10 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
             </Link>
             <button
               type="button"

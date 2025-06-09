@@ -126,11 +126,18 @@ export default function ListingsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<Property | null>(null);
   const [formData, setFormData] = useState<Partial<Property>>(initialFormData);
+  const [listings, setListings] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Form input ve select stilleri için ortak sınıflar
   const inputBaseClasses = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm";
   const placeholderClasses = "placeholder:text-navy-600 placeholder:opacity-70";
   const selectedTextClasses = "text-gray-900";
+
+  // İlanları yükle
+  useEffect(() => {
+    fetchListings();
+  }, []);
 
   // Property type değiştiğinde form alanlarını sıfırla
   useEffect(() => {
@@ -142,6 +149,20 @@ export default function ListingsPage() {
     }
   }, [formData.type, isAddModalOpen]);
 
+  const fetchListings = async () => {
+    try {
+      const response = await fetch('/api/listings');
+      const result = await response.json();
+      if (result.success) {
+        setListings(result.data);
+      }
+    } catch (error) {
+      console.error('İlanlar yüklenirken hata:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -152,10 +173,60 @@ export default function ListingsPage() {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setFormData(prev => ({
+        ...prev,
+        images: fileArray
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    setIsAddModalOpen(false);
+    
+    try {
+      // FormData oluştur
+      const submitFormData = new FormData();
+      
+      // Tüm form verilerini FormData'ya ekle
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'images' && Array.isArray(value)) {
+          // Resimler için özel işlem
+          value.forEach((file: File) => {
+            submitFormData.append('images', file);
+          });
+        } else if (typeof value === 'boolean') {
+          submitFormData.append(key, value.toString());
+        } else if (value !== undefined && value !== null && value !== '') {
+          submitFormData.append(key, value.toString());
+        }
+      });
+      
+      // API'ye gönder
+      const response = await fetch('/api/listings', {
+        method: 'POST',
+        body: submitFormData,
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(selectedListing ? 'İlan başarıyla güncellendi!' : 'İlan başarıyla eklendi!');
+        setIsAddModalOpen(false);
+        setSelectedListing(null);
+        setFormData(initialFormData);
+        // Listeyi güncelle
+        fetchListings();
+      } else {
+        alert('Hata: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Form gönderim hatası:', error);
+      alert('İlan eklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+    }
   };
 
   // Property type'a göre form alanlarını render et
@@ -712,8 +783,12 @@ export default function ListingsPage() {
             </p>
           </div>
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            onClick={() => {
+              setSelectedListing(null);
+              setFormData(initialFormData);
+              setIsAddModalOpen(true);
+            }}
+            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-vera-600 hover:bg-vera-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vera-500"
           >
             <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
             Yeni İlan Ekle
@@ -753,7 +828,103 @@ export default function ListingsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {/* İlanlar burada render edilecek */}
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                      Yükleniyor...
+                    </td>
+                  </tr>
+                ) : listings.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                      Henüz ilan bulunmuyor. İlk ilanınızı ekleyin.
+                    </td>
+                  </tr>
+                ) : (
+                  listings.map((listing: any) => (
+                    <tr key={listing.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {listing.title}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {listing.description?.substring(0, 50)}...
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          {listing.type?.includes('Daire') && <HomeIcon className="h-5 w-5 text-gray-400 mr-2" />}
+                          {listing.type?.includes('Arsa') && <MapIcon className="h-5 w-5 text-gray-400 mr-2" />}
+                          {listing.type?.includes('İş Yeri') && <BuildingOfficeIcon className="h-5 w-5 text-gray-400 mr-2" />}
+                          {listing.type === 'Tarla' && <BuildingStorefrontIcon className="h-5 w-5 text-gray-400 mr-2" />}
+                          <span className="text-sm text-gray-900">{listing.type}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          listing.type?.includes('Satılık') 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {listing.type?.includes('Satılık') ? 'Satılık' : 'Kiralık'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {listing.price ? `₺${Number(listing.price).toLocaleString('tr-TR')}` : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {listing.city}, {listing.district}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          listing.status === 'Aktif' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {listing.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(listing.listingDate).toLocaleDateString('tr-TR')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => {
+                            setSelectedListing(listing);
+                            setFormData(listing);
+                            setIsAddModalOpen(true);
+                          }}
+                          className="text-vera-600 hover:text-vera-900 mr-3"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
+                              try {
+                                const response = await fetch(`/api/listings?id=${listing.id}`, {
+                                  method: 'DELETE',
+                                });
+                                const result = await response.json();
+                                if (result.success) {
+                                  alert('İlan başarıyla silindi!');
+                                  fetchListings();
+                                } else {
+                                  alert('Hata: ' + result.error);
+                                }
+                              } catch (error) {
+                                alert('İlan silinirken hata oluştu.');
+                              }
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -1025,7 +1196,7 @@ export default function ListingsPage() {
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="file-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-vera-600 hover:text-vera-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-vera-500"
                           >
                             <span>Fotoğraf Yükle</span>
                             <input
@@ -1035,13 +1206,7 @@ export default function ListingsPage() {
                               className="sr-only"
                               multiple
                               accept="image/*"
-                              onChange={(e) => {
-                                const files = Array.from(e.target.files || []);
-                                setFormData(prev => ({
-                                  ...prev,
-                                  images: [...(prev.images || []), ...files]
-                                }));
-                              }}
+                              onChange={handleFileChange}
                             />
                           </label>
                           <p className="pl-1">veya sürükleyip bırakın</p>
@@ -1051,20 +1216,54 @@ export default function ListingsPage() {
                         </p>
                       </div>
                     </div>
+                    
+                    {/* Yüklenen dosyaları göster */}
+                    {formData.images && formData.images.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">
+                          Seçilen Dosyalar ({formData.images.length})
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          {formData.images.map((file: File, index: number) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                              <span className="text-sm text-gray-600 truncate">
+                                {file.name}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    images: prev.images?.filter((_, i) => i !== index) || []
+                                  }));
+                                }}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex justify-end space-x-3">
                   <button
                     type="button"
-                    onClick={() => setIsAddModalOpen(false)}
+                    onClick={() => {
+                      setIsAddModalOpen(false);
+                      setSelectedListing(null);
+                      setFormData(initialFormData);
+                    }}
                     className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-vera-600 hover:bg-vera-700"
                   >
                     {selectedListing ? "Güncelle" : "Kaydet"}
                   </button>
