@@ -89,8 +89,8 @@ export default function KVKK() {
               </p>
               <ul className="mt-4 list-disc pl-8 space-y-2 text-base leading-7 text-gray-600">
                 <li>E-posta: kvkk@veragrup.com</li>
-                <li>Adres: [Şirket Adresi]</li>
-                <li>Telefon: [Telefon Numarası]</li>
+                <li>Adres: İnönü Mahallesi Murat Hüdavendigar Caddesi N: 112 / 1A, 39750 Lüleburgaz/Kırklareli, Türkiye</li>
+                <li>Telefon: +90 542 241 45 41</li>
               </ul>
             </section>
           </div>

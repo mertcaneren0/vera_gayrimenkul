@@ -8,11 +8,10 @@ import { Fragment } from 'react';
 
 const kurumsalMenu = [
   { name: 'Vera Gayrimenkul', href: '/kurumsal/vera-gayrimenkul' },
-  { name: 'Vera Medya', href: '/kurumsal/vera-medya' },
   { name: 'Vera Grup', href: '/kurumsal/vera-grup' },
   { name: 'Hizmet Politikası', href: '/kurumsal/hizmet-politikasi' },
   { name: 'KVKK', href: '/kurumsal/kvkk' },
-  { name: 'Sertifikalar', href: '/kurumsal/sertifikalar' },
+  
 ];
 
 const hizmetlerMenu = [
@@ -40,8 +39,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-50 bg-black/10 backdrop-blur-sm">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <header className="absolute top-0 left-0 right-0 z-50 bg-vera-600/100 backdrop-blur-sm">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:pl-16 lg:pr-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Vera Gayrimenkul</span>

@@ -13,13 +13,33 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    // Mock login
-    if (email === "admin@veragrup.com" && password === "admin123") {
+    
+    try {
+      // Güvenli authentication API call
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Token'ı localStorage'a kaydet
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('adminToken', result.token);
+          localStorage.setItem('adminExpiry', result.expiry);
+        }
+        router.push("/admin/team");
+      } else {
+        setError(result.error || "Geçersiz e-posta veya şifre.");
+      }
+    } catch (error) {
+      setError("Giriş yapılırken bir hata oluştu.");
+    } finally {
       setLoading(false);
-      router.push("/admin/dashboard");
-    } else {
-      setLoading(false);
-      setError("Geçersiz e-posta veya şifre.");
     }
   };
 

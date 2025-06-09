@@ -13,7 +13,15 @@ const config: Config = {
           600: '#21375e',
           700: '#1a2d4f',
           900: '#0f1a2e',
+        },
+        'vera-yellow': {
+          400: '#faf30e',
+          500: '#f5ee0d',
+          600: '#e6d60c',
         }
+      },
+      fontFamily: {
+        sans: ['Lato', 'sans-serif'],
       }
     },
   },

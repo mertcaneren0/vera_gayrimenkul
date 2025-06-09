@@ -127,8 +127,8 @@ export default function HizmetPolitikasi() {
                 </p>
                 <ul className="list-disc pl-8 space-y-2">
                   <li>E-posta: info@veragrup.com</li>
-                  <li>Telefon: [Telefon Numarası]</li>
-                  <li>Online form: [Form Linki]</li>
+                  <li>Telefon: +90 542 241 45 41</li>
+                  
                 </ul>
                 <p className="mt-4">
                   Tüm geri bildirimleriniz 24 saat içinde değerlendirilecek ve size en kısa sürede dönüş yapılacaktır.

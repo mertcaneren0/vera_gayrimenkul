@@ -32,6 +32,7 @@ type PropertyCondition = "İlk Sahip" | "İkinci El";
 
 interface BaseProperty {
   // Genel Ortak Alanlar
+  id: string;
   title: string;
   description: string;
   price: string;
@@ -841,7 +842,7 @@ export default function ListingsPage() {
                     </td>
                   </tr>
                 ) : (
-                  listings.map((listing: any) => (
+                  listings.map((listing: Property) => (
                     <tr key={listing.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">

@@ -1,96 +1,143 @@
-# Vera Gayrimenkul Web Sitesi
+# Vera Gayrimenkul Website
 
-Modern ve kurumsal bir gayrimenkul web sitesi projesi. Next.js tabanlı frontend ve Node.js + Express tabanlı backend ile geliştirilmiştir.
+Modern, responsive website for Vera Real Estate built with Next.js 14.
 
-## 🚀 Teknolojiler
+## 🚀 Features
 
-### Frontend
-- Next.js (React framework)
-- TailwindCSS
-- Formik + Yup (Form yönetimi)
-- TypeScript
+- **Property Listings** - Complete property management system
+- **Team Management** - Admin panel for team members
+- **Career Applications** - Job application system
+- **Secure Admin Panel** - JWT authentication with middleware protection
+- **Responsive Design** - Mobile-first approach
+- **SEO Optimized** - Meta tags and structured data
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT (Kimlik doğrulama)
+## 🛠️ Tech Stack
 
-## 📁 Proje Yapısı
+- **Frontend:** Next.js 14, React 18, TypeScript
+- **Styling:** Tailwind CSS
+- **Authentication:** JWT with HTTP-only cookies
+- **Security:** Custom middleware, security headers
+- **Deployment:** PM2, Docker support
 
-```
-vera_gayrimenkul/
-├── frontend/           # Next.js frontend uygulaması
-│   ├── components/     # Yeniden kullanılabilir UI bileşenleri
-│   ├── pages/         # Sayfa bileşenleri
-│   ├── public/        # Statik dosyalar
-│   ├── styles/        # CSS/SCSS dosyaları
-│   └── utils/         # Yardımcı fonksiyonlar
-│
-├── backend/           # Node.js backend uygulaması
-│   ├── controllers/   # Route controller'ları
-│   ├── models/        # MongoDB modelleri
-│   ├── routes/        # API route'ları
-│   ├── middleware/    # Middleware fonksiyonları
-│   └── utils/         # Yardımcı fonksiyonlar
-│
-└── docs/             # Proje dokümantasyonu
-```
+## 📦 Quick Start
 
-## 🛠️ Kurulum
-
-### Gereksinimler
-- Node.js (v18 veya üzeri)
-- MongoDB
-- npm veya yarn
-
-### Frontend Kurulumu
+### Development
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-### Backend Kurulumu
+### Production Build
 ```bash
-cd backend
-npm install
-npm run dev
+npm run build
+npm start
 ```
 
-## 🌐 Özellikler
+## 🚀 Deployment
 
-- Modern ve responsive tasarım
-- SEO uyumlu sayfa yapısı
-- Admin paneli
-- İlan yönetim sistemi
-- Kariyer başvuru formu
-- İlan verme formu
-- Ekip yönetimi
-- JWT tabanlı güvenli admin girişi
+### Option 1: PM2 (Recommended)
+```bash
+# Copy files to server
+scp -r . user@server:/path/to/app
 
-## 🔒 Güvenlik
+# Run deployment script
+./deploy.sh
+```
 
-- JWT tabanlı kimlik doğrulama
-- Güvenli API endpoint'leri
-- CORS yapılandırması
-- Rate limiting
-- Input validasyonu
+### Option 2: Docker
+```bash
+# Build image
+docker build -t vera-gayrimenkul .
 
-## 📝 Lisans
+# Run container
+docker run -p 3000:3000 vera-gayrimenkul
+```
 
-Bu proje özel lisans altında geliştirilmiştir. Tüm hakları saklıdır.
+### Server Requirements
+- Node.js 18+
+- PM2 (for process management)
+- nginx (for reverse proxy)
 
-## 👥 İletişim
+## 🔐 Admin Panel
 
-Vera Gayrimenkul - [İletişim Bilgileri] 
+**URL:** `/admin/login`
+**Email:** `admin@veragrup.com`
+**Password:** `admin123`
 
-<iframe
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2992.7181650435487!2d27.357004176957318!3d41.401926595091744!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14b4a5d692575e35%3A0x4fc31ed773397b5e!2sVera%20Grup%20Gayrimenkul!5e0!3m2!1str!2suk!4v1749231475620!5m2!1str!2suk"
-  width="600"
-  height="450"
-  style="border:0;"
-  allowfullscreen=""
-  loading="lazy"
-  referrerpolicy="no-referrer-when-downgrade">
-</iframe> 
+### Admin Features
+- Team management
+- Career applications
+- Property listings
+- Secure authentication
+
+## 📁 Project Structure
+
+```
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── admin/           # Admin panel
+│   │   ├── api/             # API routes
+│   │   ├── ilanlar/         # Property listings
+│   │   └── components/      # Shared components
+│   └── middleware.ts        # Route protection
+├── public/
+│   └── uploads/             # File uploads
+└── deploy.sh               # Deployment script
+```
+
+## 🛡️ Security Features
+
+- JWT authentication
+- HTTP-only cookies
+- Route middleware protection
+- Security headers
+- Input validation
+- CSRF protection
+
+## 🌐 Environment Variables
+
+Create `.env.local`:
+```env
+JWT_SECRET=your-super-secret-jwt-key
+NODE_ENV=production
+```
+
+## 📝 Deployment Checklist
+
+- [ ] Update JWT_SECRET in production
+- [ ] Configure nginx reverse proxy
+- [ ] Set up SSL certificate
+- [ ] Configure firewall
+- [ ] Set up monitoring
+- [ ] Configure backups
+
+## 🔧 nginx Configuration
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+## 📞 Support
+
+For technical support or questions, contact the development team.
+
+---
+
+**Version:** 1.0.0  
+**Last Updated:** 2024 

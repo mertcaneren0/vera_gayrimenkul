@@ -1,12 +1,15 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Lato } from "next/font/google";
 
-import Footer from "@/components/layout/Footer";
 import RootLayoutClient from "@/components/layout/RootLayoutClient";
 
 
-const inter = Inter({ subsets: ["latin"] });
+const lato = Lato({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   title: "Vera Grup Gayrimenkul",
@@ -20,11 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className={inter.className}>
+      <body className={lato.className}>
         <RootLayoutClient>
           {children}
         </RootLayoutClient>
-        <Footer />
       </body>
     </html>
   );

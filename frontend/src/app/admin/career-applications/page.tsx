@@ -1,283 +1,255 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
-import { Search, Filter, Download, Eye, CheckCircle, XCircle, Clock, FileText } from 'lucide-react';
-import { CheckCircleIcon, XCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react';
+import { TrashIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
 interface CareerApplication {
   id: string;
   fullName: string;
-  email: string;
   phone: string;
-  listingTitle: string;
-  cvUrl: string;
-  applicationDate: string;
-  status: 'pending' | 'reviewed' | 'rejected';
-  notes?: string;
+  email: string;
+  address: string;
+  experience: string;
+  message?: string;
+  createdAt: string;
 }
 
 export default function CareerApplicationsPage() {
-  const router = useRouter();
   const [applications, setApplications] = useState<CareerApplication[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState<CareerApplication | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
 
-  const getStatusBadgeColor = (status: CareerApplication['status']) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'reviewed':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  // Fetch career applications
+  const fetchApplications = async () => {
+    try {
+      const response = await fetch('/api/career-applications');
+      const result = await response.json();
+      if (result.success) {
+        setApplications(result.data);
+      }
+    } catch (error) {
+      console.error('Kariyer başvuruları alınırken hata:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusText = (status: CareerApplication['status']) => {
-    switch (status) {
-      case 'pending':
-        return 'İncelenmedi';
-      case 'reviewed':
-        return 'İncelendi';
-      case 'rejected':
-        return 'Reddedildi';
-      default:
-        return 'Bilinmiyor';
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+  // Handle delete
+  const handleDelete = async (id: string, fullName: string) => {
+    if (confirm(`${fullName} adlı kişinin başvurusunu silmek istediğinizden emin misiniz?`)) {
+      try {
+        const response = await fetch(`/api/career-applications?id=${id}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Başvuru başarıyla silindi!');
+          fetchApplications();
+          if (selectedApplication?.id === id) {
+            setSelectedApplication(null);
+          }
+        } else {
+          alert('Hata: ' + result.error);
+        }
+      } catch (error) {
+        alert('Başvuru silinirken hata oluştu.');
+      }
     }
   };
 
-  const handleStatusChange = (applicationId: string, newStatus: CareerApplication['status']) => {
-    setApplications(applications.map(app => 
-      app.id === applicationId ? { ...app, status: newStatus } : app
-    ));
+  // Format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('tr-TR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
-
-  // Filtreleme ve arama
-  const filteredApplications = applications.filter(app => {
-    const matchesSearch = 
-      `${app.fullName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.phone.includes(searchTerm);
-    
-    const matchesStatus = !statusFilter || app.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
 
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">İlan Başvuruları</h1>
-        
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Ad, soyad, e-posta veya telefon ile ara..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
+    <div className="flex h-screen bg-gray-50">
+      {/* Applications List */}
+      <div className="w-1/2 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-gray-900">Kariyer Başvuruları</h1>
+            <span className="text-sm text-gray-500">
+              {applications.length} başvuru
+            </span>
           </div>
+        </div>
 
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white"
-            >
-              <option value="">Tüm Durumlar</option>
-              <option value="pending">İncelenmedi</option>
-              <option value="reviewed">İncelendi</option>
-              <option value="rejected">Reddedildi</option>
-            </select>
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-vera-600"></div>
+              <span className="ml-2 text-gray-500">Yükleniyor...</span>
+            </div>
+          ) : applications.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">Henüz kariyer başvurusu bulunmuyor.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {applications.map((application) => (
+                <div
+                  key={application.id}
+                  onClick={() => setSelectedApplication(application)}
+                  className={`p-6 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    selectedApplication?.id === application.id ? 'bg-vera-50 border-r-4 border-r-vera-600' : ''
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-gray-900">{application.fullName}</h3>
+                      <div className="flex items-center mt-2 text-sm text-gray-500">
+                        <CalendarIcon className="h-4 w-4 mr-1" />
+                        {formatDate(application.createdAt)}
+                      </div>
+                      <div className="flex items-center mt-1 text-sm text-gray-500">
+                        <BriefcaseIcon className="h-4 w-4 mr-1" />
+                        {application.experience}
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(application.id, application.fullName);
+                      }}
+                      className="text-red-600 hover:text-red-900 p-1"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="font-semibold">Başvuran</TableHead>
-                <TableHead className="font-semibold">İlan</TableHead>
-                <TableHead className="font-semibold">Başvuru Tarihi</TableHead>
-                <TableHead className="font-semibold">Durum</TableHead>
-                <TableHead className="font-semibold text-right">İşlemler</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredApplications.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-sm text-gray-500">
-                    Henüz başvuru bulunmuyor.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredApplications.map((application) => {
-                  return (
-                    <TableRow key={application.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">
-                        {application.fullName}
-                      </TableCell>
-                      <TableCell className="text-gray-600">{application.listingTitle}</TableCell>
-                      <TableCell className="text-gray-600">
-                        {format(new Date(application.applicationDate), 'dd MMMM yyyy', { locale: tr })}
-                      </TableCell>
-                      <TableCell>
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(application.status)}`}>
-                          {getStatusText(application.status)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedApplication(application);
-                            setIsDetailModalOpen(true);
-                          }}
-                          className="flex items-center gap-1.5 hover:bg-gray-50"
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                          Detay
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      {isDetailModalOpen && selectedApplication && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-lg font-medium">Başvuru Detayları</h2>
-              <button
-                onClick={() => setIsDetailModalOpen(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <span className="sr-only">Kapat</span>
-                <XCircleIcon className="h-6 w-6" />
-              </button>
+      {/* Application Detail */}
+      <div className="w-1/2 bg-white flex flex-col">
+        {selectedApplication ? (
+          <>
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedApplication.fullName}</h2>
+                  <p className="text-lg text-vera-600 font-medium mt-1">Kariyer Başvurusu</p>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                  Yeni Başvuru
+                </span>
+              </div>
+              <div className="mt-4 text-sm text-gray-500">
+                <div className="flex items-center">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Başvuru Tarihi: {formatDate(selectedApplication.createdAt)}
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                {/* İletişim Bilgileri */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">İsim Soyisim</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedApplication.fullName}</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">İletişim Bilgileri</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center">
+                      <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">E-posta</p>
+                        <a href={`mailto:${selectedApplication.email}`} className="text-sm text-vera-600 hover:text-vera-700">
+                          {selectedApplication.email}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <PhoneIcon className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Telefon</p>
+                        <a href={`tel:${selectedApplication.phone}`} className="text-sm text-vera-600 hover:text-vera-700">
+                          {selectedApplication.phone}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPinIcon className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Adres</p>
+                        <p className="text-sm text-gray-600">{selectedApplication.address}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">E-posta</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedApplication.email}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Telefon</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedApplication.phone}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Başvuru Tarihi</label>
-                  <p className="mt-1 text-sm text-gray-900">
-                    {format(new Date(selectedApplication.applicationDate), 'dd MMMM yyyy', { locale: tr })}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Başvurulan İlan</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedApplication.listingTitle}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Durum</label>
-                  <span className={`mt-1 inline-flex text-xs leading-5 font-semibold rounded-full px-2 py-1 ${getStatusBadgeColor(selectedApplication.status)}`}>
-                    {getStatusText(selectedApplication.status)}
-                  </span>
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">CV/Özgeçmiş</label>
-                <a
-                  href={selectedApplication.cvUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  CV'yi Görüntüle
-                </a>
-              </div>
+                {/* Deneyim Bilgileri */}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Deneyim</h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center">
+                      <BriefcaseIcon className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Deneyim Seviyesi</p>
+                        <p className="text-sm text-gray-600">{selectedApplication.experience}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                  Notlar
-                </label>
-                <textarea
-                  id="notes"
-                  rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Başvuru hakkında notlar..."
-                  value={selectedApplication.notes || ''}
-                  onChange={(e) => {
-                    setSelectedApplication({
-                      ...selectedApplication,
-                      notes: e.target.value
-                    });
-                  }}
-                />
-              </div>
+                {/* Ek Bilgiler */}
+                {selectedApplication.message && (
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Ek Bilgiler</h3>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <p className="text-sm text-gray-600 whitespace-pre-wrap">{selectedApplication.message}</p>
+                    </div>
+                  </div>
+                )}
 
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsDetailModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Kapat
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Notları kaydet
-                    setIsDetailModalOpen(false);
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-vera-600 border border-transparent rounded-md hover:bg-vera-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vera-500"
-                >
-                  Notları Kaydet
-                </button>
+                {/* İletişim Butonları */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Hızlı İşlemler</h3>
+                  <div className="flex space-x-3">
+                    <a
+                      href={`mailto:${selectedApplication.email}?subject=Kariyer Başvurunuz Hakkında&body=Merhaba ${selectedApplication.fullName},%0D%0A%0D%0AKariyer başvurunuz hakkında...`}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-vera-600 hover:bg-vera-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vera-500"
+                    >
+                      <EnvelopeIcon className="h-4 w-4 mr-2" />
+                      E-posta Gönder
+                    </a>
+                    <a
+                      href={`tel:${selectedApplication.phone}`}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vera-500"
+                    >
+                      <PhoneIcon className="h-4 w-4 mr-2" />
+                      Telefon Aç
+                    </a>
+                  </div>
+                </div>
               </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <BriefcaseIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">Başvuru Seçin</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Detaylarını görmek için sol taraftan bir başvuru seçin.
+              </p>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 } 

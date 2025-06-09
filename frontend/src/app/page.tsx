@@ -17,12 +17,12 @@ export default function Home() {
         />
         {/* Overlay */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-gray-900/80 to-gray-900/40" />
-        <div className="mx-auto max-w-7xl h-full flex items-center justify-center lg:px-8">
-          <div className="px-6 lg:px-0 flex items-center justify-center w-full h-full">
-            <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-7xl h-full flex items-center justify-start lg:px-8">
+          <div className="px-6 lg:px-0 flex items-center justify-start w-full h-full">
+            <div className="ml-0 mr-auto max-w-4xl text-left pl-8 lg:pl-16">
               <div className="max-w-4xl">
                 <div className="mb-4">
-                  <p className="text-lg font-medium text-indigo-400 uppercase tracking-wide">
+                  <p className="text-lg font-medium text-vera-yellow-400 uppercase tracking-wide">
                     Yatırımlarınızdaki Çözüm Ortağınız
                   </p>
                 </div>
@@ -32,7 +32,7 @@ export default function Home() {
                 <p className="mt-6 text-lg leading-8 text-gray-200">
                   Gayrimenkul sektöründe uzman kadromuz ve güvenilir hizmet anlayışımızla, yatırım hedeflerinize ulaşmanız için en doğru çözümleri sunuyoruz. Profesyonel danışmanlık hizmetimizle yanınızdayız.
                 </p>
-                <div className="mt-10 flex items-center justify-center gap-x-6">
+                <div className="mt-10 flex items-center justify-start gap-x-6">
                   <Link
                     href="/ilanlar"
                     className="rounded-md bg-vera-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-vera-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-vera-600"
@@ -55,7 +55,7 @@ export default function Home() {
           <div className="mx-auto max-w-2xl lg:max-w-none">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Güvenilir Hizmet, Kanıtlanmış Başarı
+              Rakamlarla Vera Gayrimenkul: Güveninizin Teminatı
               </h2>
               <p className="mt-4 text-lg leading-8 text-indigo-200">
                 Yılların deneyimi ve müşteri memnuniyeti odaklı yaklaşımımızla sektörde öncü konumdayız
@@ -63,20 +63,20 @@ export default function Home() {
             </div>
             <dl className="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
               <div className="flex flex-col bg-white/5 p-8">
-                <dt className="text-sm font-semibold leading-6 text-indigo-300">Tamamlanan Proje</dt>
+                <dt className="text-sm font-semibold leading-6 text-indigo-300">Memnun Yatırımcı</dt>
                 <dd className="order-first text-3xl font-bold tracking-tight text-white">500+</dd>
               </div>
               <div className="flex flex-col bg-white/5 p-8">
-                <dt className="text-sm font-semibold leading-6 text-indigo-300">Memnun Müşteri</dt>
+                <dt className="text-sm font-semibold leading-6 text-indigo-300">Portföy ve İlan</dt>
                 <dd className="order-first text-3xl font-bold tracking-tight text-white">1000+</dd>
               </div>
               <div className="flex flex-col bg-white/5 p-8">
                 <dt className="text-sm font-semibold leading-6 text-indigo-300">Yıllık Deneyim</dt>
-                <dd className="order-first text-3xl font-bold tracking-tight text-white">15+</dd>
+                <dd className="order-first text-3xl font-bold tracking-tight text-white">5+</dd>
               </div>
               <div className="flex flex-col bg-white/5 p-8">
-                <dt className="text-sm font-semibold leading-6 text-indigo-300">Uzman Kadro</dt>
-                <dd className="order-first text-3xl font-bold tracking-tight text-white">25+</dd>
+                <dt className="text-sm font-semibold leading-6 text-indigo-300">Referans</dt>
+                <dd className="order-first text-3xl font-bold tracking-tight text-white">50+</dd>
               </div>
             </dl>
           </div>

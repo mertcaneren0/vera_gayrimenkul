@@ -51,7 +51,7 @@ export default function VeraGayrimenkul() {
           <div className="relative">
             <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
               <img
-                src="/placeholder-office.jpg"
+                src="/uc.jpeg"
                 alt="Vera Gayrimenkul Ofis"
                 className="object-cover"
               />
@@ -59,14 +59,14 @@ export default function VeraGayrimenkul() {
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
                 <img
-                  src="/placeholder-team.jpg"
+                  src="/dort.jpeg"
                   alt="Vera Gayrimenkul Ekibi"
                   className="object-cover"
                 />
               </div>
               <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
                 <img
-                  src="/placeholder-service.jpg"
+                  src="/iki.jpeg"
                   alt="Vera Gayrimenkul Hizmetleri"
                   className="object-cover"
                 />

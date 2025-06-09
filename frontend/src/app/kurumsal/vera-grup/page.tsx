@@ -22,16 +22,10 @@ export default function VeraGrup() {
                 link: '/kurumsal/vera-gayrimenkul',
               },
               {
-                title: 'Vera Medya',
-                description: 'Dijital pazarlama, sosyal medya yönetimi ve içerik üretimi hizmetleri.',
-                icon: '📱',
-                link: '/kurumsal/vera-medya',
-              },
-              {
                 title: 'Vera Proje',
                 description: 'Gayrimenkul proje geliştirme ve yatırım danışmanlığı hizmetleri.',
                 icon: '📈',
-                link: '/kurumsal/vera-proje',
+                link: '/ilanlar',
               },
             ].map((company) => (
               <a
@@ -92,22 +86,7 @@ export default function VeraGrup() {
           </div>
         </div>
 
-        {/* İstatistikler */}
-        <div className="mx-auto mt-32 max-w-7xl">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { label: 'Yıllık Deneyim', value: '10+' },
-              { label: 'Tamamlanan Proje', value: '500+' },
-              { label: 'Mutlu Müşteri', value: '1000+' },
-              { label: 'Uzman Personel', value: '50+' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl font-bold text-indigo-600">{stat.value}</div>
-                <div className="mt-2 text-base text-gray-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+       
       </div>
     </div>
   );

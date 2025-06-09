@@ -202,9 +202,8 @@ export default function Danismanlik() {
             >
               İletişime Geçin
             </a>
-            <a href="/hizmetler/danismanlik/randevu" className="text-sm font-semibold leading-6 text-gray-900">
-              Online Randevu Alın <span aria-hidden="true">→</span>
-            </a>
+            
+           
           </div>
         </div>
       </div>

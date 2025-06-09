@@ -202,9 +202,7 @@ export default function Analiz() {
             >
               İletişime Geçin
             </a>
-            <a href="/hizmetler/analiz/randevu" className="text-sm font-semibold leading-6 text-gray-900">
-              Online Randevu Alın <span aria-hidden="true">→</span>
-            </a>
+            
           </div>
         </div>
       </div>

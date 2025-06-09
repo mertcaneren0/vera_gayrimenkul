@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Header from "./Header";
+import Footer from "./Footer";
 
 export default function RootLayoutClient({
   children,
@@ -17,6 +18,7 @@ export default function RootLayoutClient({
       <main className="flex-grow">
         {children}
       </main>
+      {!isAdminPage && <Footer />}
     </div>
   );
 } 
