@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
           localStorage.setItem('adminToken', result.token);
           localStorage.setItem('adminExpiry', result.expiry);
           // Force page reload for proper authentication
-          window.location.href = "/admin/dashboard/";
+          window.location.href = "/admin/dashboard";
         }
       } else {
         setError(result.error || "Geçersiz e-posta veya şifre.");

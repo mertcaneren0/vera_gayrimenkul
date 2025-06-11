@@ -92,6 +92,16 @@ export default function AdminLayout({
               </h1>
               <nav className="flex space-x-8">
                 <Link
+                  href="/admin/dashboard"
+                  className={`text-sm font-medium ${
+                    pathname?.includes('/admin/dashboard')
+                      ? 'text-vera-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <Link
                   href="/admin/team"
                   className={`text-sm font-medium ${
                     pathname?.includes('/admin/team')
