@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  trailingSlash: true,
   images: {
     domains: ['localhost'],
     unoptimized: true
   },
   experimental: {
-    serverComponentsExternalPackages: ['bcryptjs', 'jsonwebtoken']
+    serverComponentsExternalPackages: ['bcryptjs']
   },
   async headers() {
     return [

@@ -44,7 +44,7 @@ export default function Header() {
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Vera Gayrimenkul</span>
-            <img className="h-12 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
+            <img className="h-12 w-auto" src="/logo.png?v=2" alt="Vera Gayrimenkul" />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -117,7 +117,7 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Vera Gayrimenkul</span>
-              <img className="h-10 w-auto" src="/logo.png" alt="Vera Gayrimenkul" />
+              <img className="h-10 w-auto" src="/logo.png?v=2" alt="Vera Gayrimenkul" />
             </Link>
             <button
               type="button"

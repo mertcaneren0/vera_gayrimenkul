@@ -31,8 +31,9 @@ export default function AdminLoginPage() {
         if (typeof window !== 'undefined') {
           localStorage.setItem('adminToken', result.token);
           localStorage.setItem('adminExpiry', result.expiry);
+          // Force page reload for proper authentication
+          window.location.href = "/admin/dashboard/";
         }
-        router.push("/admin/team");
       } else {
         setError(result.error || "Geçersiz e-posta veya şifre.");
       }
