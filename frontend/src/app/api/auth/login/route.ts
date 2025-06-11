@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-    // Set secure HTTP-only cookie
+    // Set HTTP-only cookie (without secure flag for HTTP)
     const response = NextResponse.json({
       success: true,
       message: 'Giriş başarılı',
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set('adminToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: false, // HTTP için secure flag'i kaldırıldı
+      sameSite: 'lax', // strict yerine lax kullanıyoruz
       maxAge: 24 * 60 * 60, // 24 hours
       path: '/'
     });

@@ -28,16 +28,44 @@ export default function AdminLayout({
 
   const checkAuth = async () => {
     try {
+      // Önce localStorage'dan token'ı kontrol et
+      const localToken = localStorage.getItem('adminToken');
+      const localExpiry = localStorage.getItem('adminExpiry');
+      
+      // Token süresi dolmuş mu kontrol et
+      if (localToken && localExpiry) {
+        const expiryDate = new Date(localExpiry);
+        const now = new Date();
+        
+        if (now > expiryDate) {
+          // Token süresi dolmuş, temizle
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminExpiry');
+          router.push('/admin/login');
+          return;
+        }
+      }
+
+      // API'den token kontrolü yap (cookie veya localStorage token'ı)
       const response = await fetch('/api/auth/check', {
-        credentials: 'include'
+        credentials: 'include',
+        headers: localToken ? {
+          'Authorization': `Bearer ${localToken}`
+        } : {}
       });
       
       if (response.ok) {
         setIsAuthenticated(true);
       } else {
+        // Token geçersiz, localStorage'ı temizle
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminExpiry');
         router.push('/admin/login');
       }
     } catch (error) {
+      console.error('Auth check error:', error);
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminExpiry');
       router.push('/admin/login');
     } finally {
       setIsLoading(false);
@@ -51,12 +79,16 @@ export default function AdminLayout({
         credentials: 'include'
       });
 
-      if (response.ok) {
-        router.push('/admin/login');
-      }
+      // localStorage'ı temizle
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminExpiry');
+      
+      router.push('/admin/login');
     } catch (error) {
       console.error('Logout error:', error);
       // Force logout on error
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminExpiry');
       router.push('/admin/login');
     }
   };

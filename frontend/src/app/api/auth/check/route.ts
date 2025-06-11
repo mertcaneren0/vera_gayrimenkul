@@ -7,8 +7,16 @@ const JWT_SECRET = new TextEncoder().encode(
 
 export async function GET(request: NextRequest) {
   try {
-    // Token'ı cookie'den al
-    const token = request.cookies.get('adminToken')?.value;
+    // Token'ı önce cookie'den al
+    let token = request.cookies.get('adminToken')?.value;
+    
+    // Cookie'de yoksa Authorization header'dan al
+    if (!token) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (!token) {
       return NextResponse.json(
