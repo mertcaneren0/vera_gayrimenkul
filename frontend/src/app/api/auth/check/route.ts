@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'vera-admin-secret-key-change-in-production';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'vera-admin-jwt-secret-key-production-2024'
+);
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,11 +19,11 @@ export async function GET(request: NextRequest) {
 
     // Token'ı doğrula
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const { payload } = await jwtVerify(token, JWT_SECRET);
       return NextResponse.json(
         { 
           success: true, 
-          user: decoded,
+          user: payload,
           message: 'Token geçerli' 
         },
         { status: 200 }

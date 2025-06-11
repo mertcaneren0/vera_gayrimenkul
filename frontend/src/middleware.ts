@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'vera-admin-secret-key-change-in-production';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'vera-admin-jwt-secret-key-production-2024'
+);
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Admin route protection
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Login sayfasına erişim için token kontrolü yapma
@@ -20,7 +22,7 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      jwt.verify(token, JWT_SECRET);
+      await jwtVerify(token, JWT_SECRET);
       return NextResponse.next();
     } catch (error) {
       // Token geçersiz - login'e yönlendir

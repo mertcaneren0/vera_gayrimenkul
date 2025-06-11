@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 
 // Environment variables - secure credentials
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@veragrup.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
-const JWT_SECRET = process.env.JWT_SECRET || 'vera-admin-secret-key-production-2024';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'vera-admin-jwt-secret-key-production-2024'
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,18 +29,15 @@ export async function POST(request: NextRequest) {
     }
 
     // JWT token oluşturma
-    const token = jwt.sign(
-      { 
-        email: ADMIN_EMAIL,
-        role: 'admin',
-        iat: Math.floor(Date.now() / 1000)
-      },
-      JWT_SECRET,
-      { 
-        expiresIn: '24h',
-        issuer: 'vera-admin'
-      }
-    );
+    const token = await new SignJWT({ 
+      email: ADMIN_EMAIL,
+      role: 'admin'
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer('vera-admin')
+      .setExpirationTime('24h')
+      .sign(JWT_SECRET);
 
     const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
