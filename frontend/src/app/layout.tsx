@@ -14,6 +14,12 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "Vera Grup Gayrimenkul",
   description: "Vera Grup Gayrimenkul - Profesyonel Gayrimenkul Danışmanlığı",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/36.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({

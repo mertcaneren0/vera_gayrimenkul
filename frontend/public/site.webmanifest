@@ -1,0 +1,21 @@
+{
+  "name": "Vera Gayrimenkul",
+  "short_name": "Vera Grup",
+  "description": "Vera Grup Gayrimenkul - Profesyonel Gayrimenkul Danışmanlığı",
+  "icons": [
+    {
+      "src": "/36.png",
+      "sizes": "36x36",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#1f2937",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+} 
