@@ -165,11 +165,14 @@ export default function TeamPage() {
                 className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200"
               >
                 <div className="p-4">
-                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg">
+                  <div className="w-full overflow-hidden rounded-lg" style={{ aspectRatio: '1080/1350' }}>
                     <img
                       src={member.image}
                       alt={member.fullName}
-                      className="h-48 w-full object-cover"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/1080x1350/21375e/ffffff?text=Yüklenmedi';
+                      }}
                     />
                   </div>
                   <div className="mt-4">

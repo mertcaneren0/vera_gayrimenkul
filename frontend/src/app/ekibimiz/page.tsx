@@ -63,11 +63,14 @@ export default function EkibimizPage() {
             <div className="grid grid-cols-1 gap-x-8 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {teamMembers.map((member) => (
                 <div key={member.id} className="group">
-                  <div className="aspect-w-3 aspect-h-3 overflow-hidden rounded-2xl">
+                  <div className="w-full overflow-hidden rounded-2xl" style={{ aspectRatio: '1080/1350' }}>
                     <img
                       src={member.image}
                       alt={member.fullName}
-                      className="h-80 w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/1080x1350/21375e/ffffff?text=Yüklenmedi';
+                      }}
                     />
                   </div>
                   <div className="mt-6">
