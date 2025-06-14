@@ -14,11 +14,6 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "Vera Grup Gayrimenkul",
   description: "Vera Grup Gayrimenkul - Profesyonel Gayrimenkul Danışmanlığı",
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/36.png',
-  },
   manifest: '/site.webmanifest',
 };
 
@@ -29,6 +24,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
       <body className={lato.className}>
         <RootLayoutClient>
           {children}

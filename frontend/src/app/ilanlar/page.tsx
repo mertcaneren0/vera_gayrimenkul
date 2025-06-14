@@ -275,10 +275,21 @@ export default function IlanlarPage() {
                 key={listing.id}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-200"
               >
-                {/* Image Placeholder */}
+                {/* Image */}
                 <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                  <div className="flex items-center justify-center h-48 bg-gradient-to-r from-vera-100 to-vera-200">
-                    <HomeIcon className="h-12 w-12 text-vera-600" />
+                  <div className="flex items-center justify-center h-48 bg-gradient-to-r from-vera-100 to-vera-200 relative">
+                    {listing.images && listing.images.length > 0 ? (
+                      <img 
+                        src={listing.images[0]} 
+                        alt={listing.title}
+                        className="w-full h-full object-cover absolute inset-0"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <HomeIcon className="h-12 w-12 text-vera-600" />
+                    )}
                   </div>
                 </div>
 

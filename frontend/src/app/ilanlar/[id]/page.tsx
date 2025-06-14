@@ -73,6 +73,7 @@ export default function ListingDetailPage() {
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const fetchListing = async () => {
     try {
@@ -195,15 +196,87 @@ export default function ListingDetailPage() {
           <div className="lg:col-span-2">
             {/* Image Gallery */}
             <div className="mb-8">
-              <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-center h-96 bg-gradient-to-r from-vera-100 to-vera-200">
-                  {getPropertyIcon(listing.type)}
-                  <div className="ml-4">
-                    <p className="text-vera-600 font-medium">Fotoğraf Yüklenmedi</p>
-                    <p className="text-sm text-gray-500">İlan fotoğrafları yakında eklenecek</p>
-                  </div>
+              <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden relative">
+                <div className="flex items-center justify-center h-96 bg-gradient-to-r from-vera-100 to-vera-200 relative">
+                  {listing.images && listing.images.length > 0 ? (
+                    <>
+                      <img 
+                        src={listing.images[currentImageIndex]} 
+                        alt={listing.title}
+                        className="w-full h-full object-cover absolute inset-0"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="flex items-center justify-center w-full h-full">${getPropertyIcon(listing.type)}<div class="ml-4"><p class="text-vera-600 font-medium">Fotoğraf Yüklenemedi</p><p class="text-sm text-gray-500">Görsel bulunamadı</p></div></div>`;
+                          }
+                        }}
+                      />
+                      
+                      {/* Navigation Arrows */}
+                      {listing.images.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setCurrentImageIndex(currentImageIndex === 0 ? listing.images.length - 1 : currentImageIndex - 1)}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full transition-all duration-200 z-10"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => setCurrentImageIndex(currentImageIndex === listing.images.length - 1 ? 0 : currentImageIndex + 1)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full transition-all duration-200 z-10"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* Image Counter */}
+                      {listing.images.length > 1 && (
+                        <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm z-10">
+                          {currentImageIndex + 1} / {listing.images.length}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {getPropertyIcon(listing.type)}
+                      <div className="ml-4">
+                        <p className="text-vera-600 font-medium">Fotoğraf Yüklenmedi</p>
+                        <p className="text-sm text-gray-500">İlan fotoğrafları yakında eklenecek</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
+              
+              {/* Image Thumbnails */}
+              {listing.images && listing.images.length > 1 && (
+                <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
+                  {listing.images.map((image, index) => (
+                    <div 
+                      key={index} 
+                      className={`flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
+                        index === currentImageIndex ? 'border-vera-600 ring-2 ring-vera-200' : 'border-transparent hover:border-gray-300'
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    >
+                      <img 
+                        src={image} 
+                        alt={`${listing.title} - ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Property Info */}

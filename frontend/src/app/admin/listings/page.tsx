@@ -188,7 +188,15 @@ export default function ListingsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Form validation
+    if (!formData.title || !formData.type || !formData.price) {
+      alert('Lütfen zorunlu alanları doldurun: İlan Başlığı, İlan Türü, Fiyat');
+      return;
+    }
+    
     try {
+      console.log('Form data being submitted:', formData);
+      
       // FormData oluştur
       const submitFormData = new FormData();
       
@@ -206,13 +214,26 @@ export default function ListingsPage() {
         }
       });
       
+      console.log('FormData contents:');
+      for (let [key, value] of submitFormData.entries()) {
+        console.log(key, value);
+      }
+      
       // API'ye gönder
       const response = await fetch('/api/listings', {
         method: 'POST',
         body: submitFormData,
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const result = await response.json();
+      console.log('API response:', result);
       
       if (result.success) {
         alert(selectedListing ? 'İlan başarıyla güncellendi!' : 'İlan başarıyla eklendi!');
@@ -226,7 +247,7 @@ export default function ListingsPage() {
       }
     } catch (error) {
       console.error('Form gönderim hatası:', error);
-      alert('İlan eklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+      alert('İlan eklenirken bir hata oluştu: ' + (error as Error).message);
     }
   };
 
@@ -845,11 +866,25 @@ export default function ListingsPage() {
                   listings.map((listing: Property) => (
                     <tr key={listing.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {listing.title}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {listing.description?.substring(0, 50)}...
+                        <div className="flex items-center">
+                          {listing.images && listing.images.length > 0 && (
+                            <img 
+                              src={listing.images[0]} 
+                              alt={listing.title}
+                              className="h-10 w-10 rounded-lg object-cover mr-3"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {listing.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {listing.description?.substring(0, 50)}...
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

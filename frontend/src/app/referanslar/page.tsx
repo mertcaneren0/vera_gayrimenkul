@@ -63,13 +63,15 @@ export default function ReferanslarPage() {
                 key={photoNumber} 
                 className="aspect-square relative overflow-hidden rounded-lg bg-gray-200 hover:scale-105 transition-transform duration-300 shadow-sm hover:shadow-md"
               >
-                <Image
+                <img
                   src={`/refo/${photoNumber}.jpg`}
                   alt={`Yatırımcı ${photoNumber}`}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                   loading="lazy"
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                  onError={(e) => {
+                    console.log(`Failed to load image: /refo/${photoNumber}.jpg`);
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </div>
             ))}
